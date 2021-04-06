@@ -47,7 +47,7 @@ for N in ${DESCRIBES}; do
 	    2>${SNAP}/DESCRIBE.${N}.err; then
 		echo "`date`: ${N}.x describes failed"
 		cat ${SNAP}/DESCRIBE.${N}.err
-		rm ${SNAP}/DESCRIBE.${N}
+		rm -f ${SNAP}/DESCRIBE.${N}
 	else
 		rm ${SNAP}/DESCRIBE.${N}.err
 	fi
