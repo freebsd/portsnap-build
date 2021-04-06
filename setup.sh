@@ -56,6 +56,7 @@ xargs -s 80 <<- EOF
 	Before you can perform Portsnap builds, you need to run keygen.sh
 	to create a signing key.
 EOF
+echo
 # Create a staging area for files waiting to be uploaded
 mkdir ${STATEDIR}/stage
 mkdir ${STATEDIR}/stage/f
@@ -63,3 +64,10 @@ mkdir ${STATEDIR}/stage/bp
 mkdir ${STATEDIR}/stage/t
 mkdir ${STATEDIR}/stage/s
 
+# Clone initial repo in ${STATEDIR}/gitrepo
+# In the svn era portsnap performed metadata operations (i.e., finding the
+# latest revision number) against the svn server.  With git we need a local
+# copy of the repository for all operations.  Perform an initial clone here,
+# which we will update (git fetch) in build.sh and then create worktrees from
+# it as needed.
+git clone --bare ${REPO} ${STATEDIR}/gitrepo

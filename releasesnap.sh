@@ -16,8 +16,9 @@ fi
 # Load configuration
 . build.conf
 
-# Get the latest revision # on the tree
-NEWREV=`sh -e s/svn-getrev.sh ${TREE}`
+# Get the latest commit hash on the tree
+git --git-dir=${STATEDIR}/gitrepo fetch
+NEWHASH=`git --git-dir=${STATEDIR}/gitrepo rev-parse HEAD`
 
 # Create a memory disk for holding everything which will end up in
 # /var/db/portsnap.  Note that for normal (head) builds we mount the disk
@@ -34,7 +35,7 @@ mount -onoatime,async /dev/md${SNAPMD} ${WORKDIR}
 # Build a snapshot
 SNAPDIR=${STATEDIR}/work/files
 mkdir ${SNAPDIR}
-sh -e s/treesnap-build.sh ${TREE}@${NEWREV} "${DESCRIBES}" ${WORKDIR} ${SNAPDIR}
+sh -e s/treesnap-build.sh ${NEWHASH} "${DESCRIBES}" ${WORKDIR} ${SNAPDIR}
 
 # Replace tarballs with "aliased" tarballs
 if ! [ -z ${ALIASFILE} ]; then

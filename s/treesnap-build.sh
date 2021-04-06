@@ -6,8 +6,8 @@ if [ -z "$PORTSNAP_BUILD_CONF_READ" ]; then
 	exit 1
 fi
 
-# usage: sh -e treesnap-build.sh TREEREV DESCRIBES WORKDIR SNAPDIR
-TREEREV="$1"
+# usage: sh -e treesnap-build.sh TREEHASH DESCRIBES WORKDIR SNAPDIR
+TREEHASH="$1"
 DESCRIBES="$2"
 WORKDIR="$3"
 SNAP="$4"
@@ -26,8 +26,9 @@ newfs -f 512 -i 2048 -O 1 -n /dev/md${PORTSMD} >/dev/null
 mount /dev/md${PORTSMD} ${PORTSDIR}
 
 # Export ports tree
-echo "`date`: Exporting \"${TREEREV}\" ports tree"
-svn export -q --force ${REPO}/${TREEREV} ${PORTSDIR}
+echo "`date`: Exporting \"${TREEHASH}\" ports tree"
+git --git-dir=${STATEDIR}/gitrepo worktree prune
+git --git-dir=${STATEDIR}/gitrepo worktree add ${PORTSDIR} ${TREEHASH}
 df -i ${PORTSDIR}
 
 # Create snapshot

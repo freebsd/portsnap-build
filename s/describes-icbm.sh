@@ -6,13 +6,10 @@ if [ -z "$PORTSNAP_BUILD_CONF_READ" ]; then
 	exit 1
 fi
 
-# usage: sh -e describes-icbm.sh GOODREV BADREV ERRFILE
-GOODREV="$1"
-BADREV="$2"
+# usage: sh -e describes-icbm.sh GOODHASH BADHASH ERRFILE
+GOODHASH="$1"
+BADHASH="$2"
 ERRFILE="$3"
-
-# The first potentially faulty commit is GOODREV+1
-BADSTART=`expr "$GOODREV" + 1`
 
 # Standard From/To/Subject lines
 cat <<EOF
@@ -22,16 +19,8 @@ Subject: INDEX build breakage
 EOF
 
 # CC people who might have broken the INDEX
-jot - ${BADSTART} ${BADREV} |
-    while read REV; do
-	svn log -c ${REV} ${REPO} |
-	    tail +2 |
-	    head -1;
-done |
-    cut -f 2 -d '|' |
-    sort -u |
-    tr -d ' ' |
-    lam -s 'CC: ' - -s '@freebsd.org'
+git --git-dir=${STATEDIR}/repodir log --format=%aE ${GOODHASH}..${BADHASH} |
+    sed 's/^/CC: /'
 
 # Blank line and build failure output
 echo
@@ -40,18 +29,10 @@ cat ${ERRFILE}
 # List potentially at-fault committers (again) and SVN history
 echo
 echo "Committers on the hook (CCed):"
-jot - ${BADSTART} ${BADREV} |
-    while read REV; do
-	svn log -c ${REV} ${REPO} |
-	    tail +2 |
-	    head -1;
-done |
-    cut -f 2 -d '|' |
-    sort -u |
-    tr -d ' '
-echo
-echo "Latest SVN commits:"
-svn log -r ${BADSTART}:${BADREV} ${REPO}
+echo $(git --git-dir=${STATEDIR}/repodir log --format=%aE ${GOODHASH}..${BADHASH})
+
+echo "Latest commits:"
+git --git-dir=${STATEDIR}/repodir log --oneline ${GOODHASH}..${BADHASH}
 
 # Final message about when emails are sent
 cat <<EOF
