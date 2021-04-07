@@ -29,6 +29,9 @@ mount /dev/md${PORTSMD} ${PORTSDIR}
 echo "`date`: Exporting \"${TREEHASH}\" ports tree"
 git --git-dir=${STATEDIR}/gitrepo worktree prune
 git --git-dir=${STATEDIR}/gitrepo worktree add ${PORTSDIR} ${TREEHASH}
+# Reset mtime to the most recent update on each file using restore-mtime from
+# https://github.com/MestreLion/git-tools
+(cd ${PORTSDIR} && git restore-mtime)
 df -i ${PORTSDIR}
 
 # Create snapshot
