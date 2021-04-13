@@ -25,7 +25,7 @@ SNAPDATE=`date "+%s"`
 
 # Update and get the latest commit hash
 git --git-dir=${STATEDIR}/gitrepo fetch
-NEWHASH=`git --git-dir=${STATEDIR}/gitrepo rev-parse HEAD`
+NEWHASH=`git --git-dir=${STATEDIR}/gitrepo rev-parse FETCH_HEAD`
 
 # Create a memory disk for holding the snapshot files.
 SNAPMD=`mdconfig -a -t swap -s ${SNAPMDSIZE} -n`
