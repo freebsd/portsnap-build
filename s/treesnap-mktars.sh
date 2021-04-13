@@ -22,6 +22,9 @@ shift 4
 
 # Create tarballs
 for OBJ in "$@"; do
+	if [ "${OBJ}" = ".git" ]; then
+		continue;
+	fi
 	if [ -d ${DIR}/${OBJ} ]; then
 		( cd ${DIR}/${OBJ} && find . -type f ) |
 		    sort |
