@@ -36,11 +36,15 @@ for OBJ in "$@"; do
 	fi
 done > ${F_OBJ}
 
-# Compute SHA256 hashes
-( cd ${TARTREE} && sha256 -r "$@" ) > ${F_HASH}
-
-# Compress all the files
-( cd ${TARTREE} && gzip -9n "$@" )
+# Compute SHA256 hashes and compress files
+for OBJ in "$@"; do
+	if [ "${OBJ}" = ".git" ]; then
+		continue;
+	fi
+	cd ${TARTREE}
+	sha256 -r "${OBJ}"
+	gzip -9n "${OBJ}"
+done > ${F_HASH}
 
 # Move files into place
 while read HASH OBJ; do
